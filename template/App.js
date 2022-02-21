@@ -420,7 +420,7 @@ class App extends Component {
   };
 
   backAction = e => {
-    this.webview.goBack();
+    //this.webview.goBack();
     return true;
   };
 
@@ -462,11 +462,45 @@ class App extends Component {
   triggerCenterButton = this.invoke.bind('centerButton');
 
   permissionsGet = () => {
-    PermissionsAndroid.request(
+    let read = PermissionsAndroid.check(
       PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-      PermissionsAndroid.PERMISSIONS.CAMERA,
+    );
+    let write = PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.CAMERA);
+    let camera = PermissionsAndroid.check(
       PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
     );
+    let location = PermissionsAndroid.check(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+    );
+
+    if (
+      read !== PermissionsAndroid.RESULTS.GRANDTED &&
+      read !== PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN
+    ) {
+      await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE);
+    }
+
+    if (
+      write !== PermissionsAndroid.RESULTS.GRANDTED &&
+      write !== PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN
+    ) {
+      await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE);
+    }
+
+    if (
+      camera !== PermissionsAndroid.RESULTS.GRANDTED &&
+      camera !== PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN
+    ) {
+      await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.CAMERA);
+    }
+
+    if (
+      location !== PermissionsAndroid.RESULTS.GRANDTED &&
+      location !== PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN
+    ) {
+      await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION);
+    }
+
   };
 
   loadEndFunction = () => {
