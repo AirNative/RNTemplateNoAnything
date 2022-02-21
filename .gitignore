@@ -38,6 +38,9 @@ project.xcworkspace
 /template/android/build/
 
 # Buck
+# BUCK
+*.keystore
+!debug.keystore
 .buckd
 buck-out
 /.lsp.buckd
