@@ -461,7 +461,7 @@ class App extends Component {
   triggerRightButton = this.invoke.bind('rightButton');
   triggerCenterButton = this.invoke.bind('centerButton');
 
-  permissionsGet = () => {
+  permissionsGet = async () => {
     let read = PermissionsAndroid.check(
       PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
     );
