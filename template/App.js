@@ -177,44 +177,98 @@ class App extends Component {
   /** -------- */
 
   /** In-App functions */
-  fetchProducts = products => {
-    RNIap.getProducts(products).then(list => {
-      let data;
-      if (this.state.products.length > 0) {
-        data = this.state.products.concat(list);
-      } else {
-        data = list;
-      }
-
-      this.setState({products: data});
-      this.triggerEvent('products_is_fetched');
-    });
-  };
-
-  fetchSubscriptions = subs => {
-    RNIap.getSubscriptions(subs).then(list => {
-      let data;
-      if (this.state.products.length > 0) {
-        data = this.state.products.concat(list);
-      } else {
-        data = list;
-      }
-
-      this.setState({products: data});
-      this.triggerEvent('subscriptions_is_fetched');
-    });
-  };
-
-  requestPurchase = async sku => {
-    try {
-      let purchaseData = await RNIap.requestPurchase(sku, false);
-      return JSON.stringify(purchaseData);
-    } catch (err) {
-      Alert.alert(err.code, err.message);
+  
+  /** Deprecated */
+  fetchProducts = async products => {
+    function onlyUnique(value, index, self) {
+      return self.indexOf(value) === index;
     }
+
+    let list = await RNIap.getProducts(products);
+    let data;
+    if (this.state.products.length > 0) {
+      data = this.state.products.concat(list);
+    } else {
+      data = list;
+    }
+
+    data.filter(onlyUnique);
+
+    this.setState({products: data});
+    return true;
+  };
+  /** Deprecated */
+  fetchSubscriptions = async subs => {
+    function onlyUnique(value, index, self) {
+      return self.indexOf(value) === index;
+    }
+    let list = await RNIap.getSubscriptions(subs);
+    let data;
+    if (this.state.products.length > 0) {
+      data = this.state.products.concat(list);
+    } else {
+      data = list;
+    }
+
+    data.filter(onlyUnique);
+    this.setState({products: data});
+
+    return true;
   };
 
-  getAllProducts = () => {
+  requestPurchase = async (sku, isSubscription) => {
+    return await new Promise((resolve, reject) => {
+      if (isSubscription) {
+        RNIap.getSubscriptions([sku])
+          .then(subscriptionList => {
+            if (subscriptionList.length === 0) {
+              throw new Error('This subscription not found');
+            }
+            RNIap.requestPurchase(sku, false)
+              .then(
+                transactionSuccess => {
+                  resolve(transactionSuccess);
+                },
+                transactionFailed => {
+                  throw new Error(transactionFailed.message);
+                },
+              )
+              .catch(transactionError => {
+                reject('Error in transaction: ' + transactionError.message);
+              });
+          })
+          .catch(fetchError => {
+            Alert.alert('Purchase error', fetchError.message);
+            reject('Purchase error: ' + fetchError.message);
+          });
+      } else {
+        RNIap.getProducts([sku])
+          .then(productsList => {
+            if (productsList.length === 0) {
+              throw new Error('This product not found');
+            }
+            RNIap.requestPurchase(sku, false)
+              .then(
+                transactionSuccess => {
+                  resolve(transactionSuccess);
+                },
+                transactionFailed => {
+                  throw new Error(transactionFailed.message);
+                },
+              )
+              .catch(transactionError => {
+                reject('Error in transaction: ' + transactionError.message);
+              });
+          })
+          .catch(fetchError => {
+            Alert.alert('Purchase error', fetchError.message);
+            reject('Purchase error: ' + fetchError.message);
+          });
+      }
+    });
+  };
+  /** Deprecated */
+  getAllProducts = async () => {
     var listOfProducts = [];
     this.state.products.forEach(p => {
       listOfProducts.push({
@@ -242,6 +296,25 @@ class App extends Component {
         );
       }
     }
+  };
+
+  getAllAvailablePurchases = () => {
+    RNIap.getAvailablePurchases().then(list => {
+        list.forEach( product => {
+          console.log(product.productId);
+        })
+      });
+  };
+
+  getPurchaseHistory = () => {
+    Alert.alert('Get history');
+    RNIap.getPurchaseHistory().then(history => {
+      Alert.alert('Response');
+      Alert.alert('History', JSON.stringify(history[0]));
+      history.forEach(item => {
+        console.log(item);
+      });
+    });
   };
   /** In-App End */
 
