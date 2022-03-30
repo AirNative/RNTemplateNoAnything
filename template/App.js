@@ -12,6 +12,7 @@ import {
   Image,
   SafeAreaView,
   Linking,
+  AppState
 } from 'react-native';
 
 import {WebView} from 'react-native-webview';
@@ -76,6 +77,7 @@ class App extends Component {
       bgColor: '#FFF',
       centerButtonFN: function () {},
       rightButtonFN: function () {},
+      appState: AppState.currentState,
     };
   }
 
@@ -83,6 +85,14 @@ class App extends Component {
     if (this.state.iapEnabled) {
       RNIap.initConnection();
     }
+    
+    this.appStateChecker = AppState.addEventListener('change', (newState) => {
+      if ( this.state.appState.match(/inactive|background/) && newState === 'active' ){
+        this.triggerEvent('loaded_from_background');
+      }
+
+      this.setState({appState: newState});
+    });
 
     BackHandler.addEventListener('hardwareBackPress', this.backAction);
 
@@ -107,6 +117,7 @@ class App extends Component {
       this.invoke.define('fetchSubscriptions', this.fetchSubscriptions);
       this.invoke.define('restorePurchase', this.goToRestore);
       this.invoke.define('getAllProducts', this.getAllProducts);
+      this.invoke.define('findPurchase', this.findPurchase);
     }
 
     NetInfo.addEventListener(state => {
@@ -121,6 +132,8 @@ class App extends Component {
     if (this.state.iapEnabled) {
       RNIap.endConnection();
     }
+    
+    this.appStateChecker.remove();
   }
 
   /** Contacts */
@@ -298,23 +311,22 @@ class App extends Component {
     }
   };
 
-  getAllAvailablePurchases = () => {
-    RNIap.getAvailablePurchases().then(list => {
-        list.forEach( product => {
-          console.log(product.productId);
-        })
+  findPurchase = transactionId => {
+    return new Promise((resolve, reject) => {
+      RNIap.getAvailablePurchases().then(listOfPurchases => {
+        listOfPurchases.forEach(purchase => {
+          if (purchase.transactionId == transactionId) {
+            resolve(true);
+          }
+        });
+        resolve(false);
       });
+    });
   };
 
   getPurchaseHistory = () => {
-    Alert.alert('Get history');
-    RNIap.getPurchaseHistory().then(history => {
-      Alert.alert('Response');
-      Alert.alert('History', JSON.stringify(history[0]));
-      history.forEach(item => {
-        console.log(item);
-      });
-    });
+    RNIap.clearTransactionIOS();
+    RNIap.getPurchaseHistory().then(history => {});
   };
   /** In-App End */
 
