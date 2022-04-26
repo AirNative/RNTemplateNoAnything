@@ -505,7 +505,7 @@ class App extends Component {
   };
 
   backAction = e => {
-    //this.webview.goBack();
+    this.triggerEvent('back_button');
     return true;
   };
 
