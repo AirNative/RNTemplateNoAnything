@@ -106,6 +106,7 @@ class App extends Component {
     this.invoke.define('startLocationTracking', this.startLocationTracking);
     this.invoke.define('stopLocationTracking', this.stopLocationTracking);
     this.invoke.define('setStatusBarColor', this.setStatusBarColor);
+    this.invoke.define('getDeviceOS', this.getDeviceOS);
 
     if (this.state.contactsEnabled) {
       this.invoke.define('getContacts', this.getContacts);
@@ -135,6 +136,11 @@ class App extends Component {
     
     this.appStateChecker.remove();
   }
+  
+  /* Platform OS */
+  getDeviceOS = () => {
+    return Platform.OS;
+  };
 
   /** Contacts */
   getContacts = () => {
