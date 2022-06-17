@@ -487,7 +487,11 @@ class App extends Component {
   };
 
   oneSignalGetId = async () => {
-    return await OneSignal.getDeviceState();
+    var state = await OneSignal.getDeviceState();
+    if (state.isSubscribed === false) {
+      OneSignal.addTrigger("prompt_ios", "true");
+    }
+    return state;
   };
 
   alertWord = (title, text) => {
