@@ -33,7 +33,6 @@ const enableContacts = false;
 //import * as RNIap from 'react-native-iap';
 const enableIAP = false;
 
-
 /** OneSignal App ID - тут ставит id приложения юзера для инициализации OneSignal */
 OneSignal.setAppId('22d1a9d2-0e81-4906-acff-13c98c1a6847');
 

@@ -1,8 +1,8 @@
 {
-  "name": "react-native-new-template",
-  "version": "0.0.5",
-  "description": "React Native Template",
-  "repository": "git@github.com:slimecube98/RNTemplateNoAnything.git",
+  "name": "air-native-no-anything",
+  "version": "1.0.0",
+  "description": "RN template without Contacts and IAP",
+  "repository": "git@github.com:AirNative/RNTemplateNoAnything.git",
   "author": "Dmitrii Vasiliev <slimecube98@gmail.com>",
   "license": "MIT"
 }
