@@ -495,7 +495,8 @@ class App extends Component {
   };
 
   geoError = error => {
-    Alert.alert('Geo Error:', `${JSON.stringify(error)}`);
+    this.publishState('current_position', "");
+    //Alert.alert('Geo Error:', `${JSON.stringify(error)}`);
     /** Нужно придумать что-то для вывода ошибок, а то бесит через алёрты это делать
      * Может быть тригерить евент "Ошибка" и в стэйт передавать инфо о ошибке.
      */
