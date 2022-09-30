@@ -148,7 +148,7 @@ class App extends Component {
     this.invoke.define('setStatusBarColor', this.setStatusBarColor);
     this.invoke.define('getDeviceOS', this.getDeviceOS);
     this.invoke.define('showPrompt', this.showPrompt);
-
+    this.invoke.define('getPermissionsUser', this.getPermissionsUser);
     if (this.state.contactsEnabled) {
       this.invoke.define('getContacts', this.getContacts);
     }
@@ -170,6 +170,33 @@ class App extends Component {
     });
   }
 
+    getPermissionsUser = async (permissionName) => {
+    const PERMISSION_LIST = {
+      location: PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      read: PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+      camera: PermissionsAndroid.PERMISSIONS.CAMERA,
+      write: PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+    };
+  
+    try {
+      if (!PERMISSION_LIST[permissionName]) throw new Error("This permission can't be requested")
+      const currentPermissionStatus = await PermissionsAndroid.check(PERMISSION_LIST[permissionName]);
+      if (currentPermissionStatus) {
+        return {
+          currentPermissionStatus: currentPermissionStatus,
+          reason: 'denied'
+        }
+      } 
+        const response = await PermissionsAndroid.request(PERMISSION_LIST[permissionName]);
+        return {
+          currentPermissionStatus: currentPermissionStatus,
+          reason: response
+        }
+      
+    } catch (error) {
+      Alert.alert('Get permission error: ', error.message);
+    }
+  };	
   componentWillUnmount() {
     if (this.state.iapEnabled) {
       RNIap.endConnection();
