@@ -569,9 +569,14 @@ class App extends Component {
           .then(() => {
             FingerprintScanner.authenticate(params)
               .then(() => resolve(true))
-              .catch(() => resolve(false))
+              .catch((error) => {
+                resolve(false)
+              })
           })
-          .catch(resolve(false))
+          .catch((error) => {
+            Alert.alert('Fingerprint Authentication', error.message)
+            resolve(false)
+          })
       } catch (err) {
         resolve(false)
       }
