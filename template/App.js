@@ -136,7 +136,7 @@ class App extends Component {
 
     BackHandler.addEventListener('hardwareBackPress', this.backAction);
 
-    this.invoke.define('biometrycScan', this.biometrycScan);
+    this.invoke.define('biometrycScan', this.authCurrent);
     this.invoke.define('oneSignalGetId', this.oneSignalGetId);
     this.invoke.define('alertWord', this.alertWord);
     this.invoke.define('stopScaner', this.stopScaner);
@@ -559,24 +559,23 @@ class App extends Component {
     return Platform.Version < 23;
   };
 
-  authCurrent = () => {
-    if (Platform.OS === 'ios') {
-      FingerprintScanner.authenticate({
-        description: 'Log in with Biometrics',
-      })
-        .then(() => {
-          this.triggerByometrycs(true);
-        })
-        .catch(error => {
-          Alert.alert(`${error.message}`);
-        });
-    } else {
-      FingerprintScanner.authenticate({
-        title: 'Log in with Biometrics',
-      }).then(() => {
-        this.triggerByometrycs(true);
-      });
-    }
+  authCurrent = async (question = 'Log in with Biometrics') => {
+    const params = {}
+    if (Platform.OS === 'ios') params.description = question
+    if (Platform.OS === 'android') params.title = question
+    return await new Promise((resolve) => {
+      try {
+        FingerprintScanner.isSensorAvailable()
+          .then(() => {
+            FingerprintScanner.authenticate(params)
+              .then(() => resolve(true))
+              .catch(() => resolve(false))
+          })
+          .catch(resolve(false))
+      } catch (err) {
+        resolve(false)
+      }
+    })
   };
 
   oneSignalGetId = async () => {
