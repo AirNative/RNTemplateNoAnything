@@ -103,6 +103,7 @@ class App extends Component {
       rightButtonFN: function () {},
       appState: AppState.currentState,
       currentURL: userURL,
+      canGoBack: false
     };
   }
 
@@ -613,7 +614,7 @@ class App extends Component {
   };
 
   backAction = e => {
-    //this.webview.goBack();
+    if ( this.webview && this.state.canGoBack ) this.webview.goBack();
     this.triggerEvent('back_button');
     return true;
   };
@@ -723,6 +724,9 @@ class App extends Component {
 
   handleWebViewNavigationStateChange = navState => {
     const {url} = navState;
+    this.setState({
+      canGoBack: navState.canGoBack
+    });
     if (!url) return;
 
     if (
