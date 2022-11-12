@@ -41,6 +41,7 @@ OneSignal.setAppId('22d1a9d2-0e81-4906-acff-13c98c1a6847');
  *  будет фулскрин приложение без шторки
  */
 const setFullscreenWithoutBar = false;
+const USER_AGENT = "Mozilla/5.0 (X11; Linux i686) AppleWebKit/5322 (KHTML, like Gecko) Chrome/37.0.893.0 Mobile Safari/5322";
 
 /** Если поставить
  *  setFullscreenWithBar = true
@@ -769,6 +770,7 @@ class App extends Component {
               allowsInlineMediaPlayback={true}
               startInLoadingState={true}
               sharedCookiesEnabled={true}
+              userAgent={USER_AGENT}
               renderLoading={() => {
                 return (
                   <View
@@ -815,6 +817,7 @@ class App extends Component {
               allowsInlineMediaPlayback={true}
               startInLoadingState={true}
               sharedCookiesEnabled={true}
+              userAgent={USER_AGENT}
               renderLoading={() => {
                 return (
                   <View
